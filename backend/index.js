@@ -27,8 +27,7 @@ const allowedOrigins = [
 app.use(
   cors({
     origin(origin, callback) {
-      // allow tools / server-to-server requests with no Origin header
-      if (!origin) return callback(null, true);
+      if (!origin) return callback(null, true); // tools / SSR
 
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
@@ -40,9 +39,6 @@ app.use(
     credentials: true,
   })
 );
-
-// preflight
-app.options("*", cors());
 
 app.use(express.json());
 
