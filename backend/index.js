@@ -18,19 +18,31 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 // ======= MIDDLEWARES =======
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://mern-todo-app-mu-three.vercel.app",
+  "https://mern-todo-app-bzmljkh10-sanjay-choudharis-projects.vercel.app",
+  "https://mern-todo-app-git-main-sanjay-choudharis-projects.vercel.app",
+];
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000", // local dev
-      "https://mern-todo-app-mu-three.vercel.app", // main production
-      "https://mern-todo-app-git-main-sanjay-choudharis-projects.vercel.app", // vercel preview
-      "https://mern-todo-bzmljkh10-sanjay-choudharis-projects.vercel.app" // another preview
-    ],
+    origin(origin, callback) {
+      // Allow tools / server-to-server (no Origin header)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      console.log("❌ Blocked by CORS:", origin);
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   })
 );
 
-
+// (optional but helpful)
+app.options("*", cors());
 app.use(express.json());
 
 // ======= DB CONNECTION =======
@@ -268,5 +280,6 @@ app.delete("/api/todos/:id", auth, async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running at http://127.0.0.1:${PORT}`);
 });
+
 
 
