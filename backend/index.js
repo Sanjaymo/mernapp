@@ -1,4 +1,3 @@
-
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
@@ -17,10 +16,7 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
-// ======= MIDDLEWARES =======
-
-const cors = require("cors");
-
+// ======= CORS (LOCAL + VERCEL) =======
 const allowedOrigins = [
   "http://localhost:3000",
   "https://mern-todo-app-mu-three.vercel.app",
@@ -31,7 +27,7 @@ const allowedOrigins = [
 app.use(
   cors({
     origin(origin, callback) {
-      // allow tools / server-to-server (no Origin header)
+      // allow tools / server-to-server requests with no Origin header
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
@@ -45,9 +41,10 @@ app.use(
   })
 );
 
-app.options("*", cors()); // optional but nice
-app.use(express.json());
+// preflight
+app.options("*", cors());
 
+app.use(express.json());
 
 // ======= DB CONNECTION =======
 mongoose
@@ -102,6 +99,7 @@ function issueToken(user) {
 
 // ======= ROUTES =======
 
+// Health check
 app.get("/", (req, res) => {
   res.json({ message: "Backend API is working ✅" });
 });
@@ -282,9 +280,5 @@ app.delete("/api/todos/:id", auth, async (req, res) => {
 
 // ======= START SERVER =======
 app.listen(PORT, () => {
-  console.log(`Server running at http://127.0.0.1:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
-
-
-
-
