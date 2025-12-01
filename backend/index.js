@@ -20,9 +20,14 @@ const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 // ======= MIDDLEWARES =======
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: [
+      "http://localhost:3000",
+      "https://mern-todo-app-mu-three.vercel.app" 
+    ],
+    credentials: true,
   })
 );
+
 app.use(express.json());
 
 // ======= DB CONNECTION =======
